@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Laboratorio de Energía | Física en Acción</title>
+<style>
+:root{color-scheme:dark;--bg:#080f1d;--panel:#111d30;--panel2:#15243a;--line:#2b3c53;--text:#eaf3ff;--muted:#9db0c9;--cyan:#4dd9f4;--amber:#ffbf62;--green:#65e2a0;--red:#ff7b87;--violet:#b9a3ff}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--bg) radial-gradient(circle at 70% 0%,#172944 0%,var(--bg) 48%) no-repeat;color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:auto;padding:22px 16px 70px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.logo{display:grid;place-items:center;flex:none;width:46px;height:46px;background:#16364c;border:1px solid #367c9b;border-radius:14px;font-size:25px;box-shadow:0 0 26px rgba(77,217,244,.22)}
+h1{font-size:clamp(22px,4vw,34px);line-height:1.15;margin:0}
+h2{font-size:21px;margin:0 0 5px}
+p{margin:5px 0;color:var(--muted)}
+button{font:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.headrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{display:inline-block;padding:3px 9px;background:#173a2c;color:var(--green);border:1px solid #2b6b4f;border-radius:20px;font-size:11px;font-weight:800}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px 0}
+.tab{background:#101b2c;border:1px solid var(--line);border-radius:12px;color:var(--muted);padding:13px 7px;font-weight:700;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.tab:hover{color:var(--text);border-color:#3b5673}
+.tab.active{background:#123448;color:var(--cyan);border-color:#3185a0;box-shadow:inset 0 -2px 0 var(--cyan)}
+.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(290px,1fr);gap:16px;align-items:start}
+.card{background:linear-gradient(145deg,var(--panel),#0e1829);border:1px solid var(--line);border-radius:18px;padding:17px;min-width:0}
+.stage{position:relative;background:#0d2033;border:1px solid #294258;border-radius:14px;overflow:hidden;margin-top:13px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+canvas{display:block;width:100%;height:auto}
+#scene{aspect-ratio:800/485;touch-action:pan-y}
+#chart{aspect-ratio:800/210}
+.timeline{display:flex;align-items:center;gap:12px;margin-top:12px}
+.timeline input{flex:1;min-width:0;margin:0}
+.timeline output{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--cyan);margin:10px 0 0;cursor:pointer}
+.buttons{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.action{background:#36b8d4;color:#051420;border:0;border-radius:11px;padding:11px 16px;font-weight:800;cursor:pointer;transition:filter .15s,transform .1s}
+.action:hover{filter:brightness(1.12)}
+.action:active{transform:translateY(1px)}
+.action.secondary{background:#1b2d43;color:var(--text);border:1px solid #39536a}
+.speedwrap{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.seg{display:inline-flex;background:#0b1625;border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg button{background:transparent;border:0;color:var(--muted);padding:7px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed=true]{background:#123448;color:var(--cyan)}
+.chartbox{margin-top:14px;background:#0a1525;border:1px solid var(--line);border-radius:14px;padding:10px 10px 6px}
+.charthead{display:flex;justify-content:space-between;align-items:center;gap:6px 14px;flex-wrap:wrap;margin-bottom:6px}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.note{border-left:3px solid var(--cyan);padding:10px 12px;background:#0c2333;border-radius:0 10px 10px 0;margin-top:14px;color:#c4d6e7;font-size:13px}
+.note b{color:var(--text)}
+.controls{display:grid;gap:15px;margin-top:15px}
+.ctl{display:block}
+.controlhead{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.controlhead output{color:var(--cyan);font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.controls .seg{display:flex}
+.controls .seg button{flex:1;padding:9px 8px}
+.switch{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);cursor:pointer}
+.switch input{accent-color:var(--cyan);width:18px;height:18px;flex:none;margin:1px 0 0;cursor:pointer}
+.subtle{font-size:12px;margin:0}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:18px 0 4px}
+.metric{background:#0a1525;border:1px solid var(--line);border-radius:12px;padding:10px 11px}
+.metric span{display:block;color:var(--muted);font-size:11px}
+.metric strong{font-size:clamp(15px,2.3vw,20px);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sectionlabel{margin:16px 0 7px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;height:14px;border-radius:8px;overflow:hidden;background:#263448}
+.stack i{display:block;height:100%}
+.baleq{margin-top:7px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.baleq b{color:var(--text)}
+.baleq em{color:var(--green);font-style:normal;font-weight:800}
+.barlabel{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin:10px 0 5px}
+.barlabel b{color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.bar{height:10px;border-radius:8px;background:#263448;overflow:hidden}
+.fill{height:100%;border-radius:8px;width:0}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#d8e6f9;white-space:pre-line;overflow-wrap:anywhere;background:#0b1625;border:1px solid #1d2d42;padding:11px 12px;border-radius:10px;margin-top:16px}
+.results{list-style:none;padding:0;margin:0;font-size:13px;color:#c4d6e7}
+.results li{position:relative;padding:6px 0 6px 16px;border-bottom:1px dashed #22344a}
+.results li:last-child{border-bottom:0}
+.results li:before{content:"";position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+.results b{color:var(--green)}
+.footer{margin-top:20px;font-size:12px;color:var(--muted)}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+@media(max-width:600px){main{padding:15px 11px 60px}.tabs{gap:5px}.tab{font-size:12px;padding:12px 4px}.card{padding:13px}.speedwrap{margin-left:0;width:100%}.metric strong{font-size:16px}header{margin-top:5px}.action{padding:10px 13px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo" aria-hidden="true">⚛</div>
+  <div>
+    <div class="eyebrow">Colegio Británico SCZ · 5.º B</div>
+    <h1>Laboratorio de Energía</h1>
+    <p>Manifestación y conservación de la energía · Física en Acción</p>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Seleccionar simulación">
+  <button class="tab active" type="button" data-tab="coaster" role="tab" aria-selected="true">🎢 Montaña rusa</button>
+  <button class="tab" type="button" data-tab="ball" role="tab" aria-selected="false">🏀 Pelota</button>
+  <button class="tab" type="button" data-tab="bike" role="tab" aria-selected="false">🚴 Bicicleta</button>
+</div>
+
+<div class="layout">
+  <section class="card">
+    <div class="headrow"><div class="eyebrow" id="chapter">Simulación 01 / 03</div><span class="pill" id="pill" hidden>Datos del informe</span></div>
+    <h2 id="title">Montaña rusa</h2>
+    <p id="desc"></p>
+    <div class="stage"><canvas id="scene" width="800" height="485" role="img" aria-label="Animación de conservación de la energía"></canvas></div>
+    <div class="timeline">
+      <input type="range" id="scrub" min="0" max="1000" step="1" value="0" aria-label="Línea de tiempo de la simulación">
+      <output id="tl">0,00 s / 0,00 s</output>
+    </div>
+    <div class="buttons">
+      <button class="action" id="play" type="button">▶ Iniciar</button>
+      <button class="action secondary" id="reset" type="button">↺ Reiniciar</button>
+      <button class="action secondary" id="example" type="button">Usar datos del informe</button>
+      <div class="speedwrap"><span>Velocidad</span>
+        <div class="seg" id="rate" role="group" aria-label="Velocidad de reproducción">
+          <button type="button" data-rate="0.25" aria-pressed="false">0,25×</button>
+          <button type="button" data-rate="0.5" aria-pressed="false">0,5×</button>
+          <button type="button" data-rate="1" aria-pressed="true">1×</button>
+          <button type="button" data-rate="2" aria-pressed="false">2×</button>
+        </div>
+      </div>
+    </div>
+    <div class="chartbox">
+      <div class="charthead"><span class="eyebrow">Energía en función del tiempo</span><div class="legend" id="legend"></div></div>
+      <canvas id="chart" width="800" height="210" role="img" aria-label="Gráfica de energía en función del tiempo"></canvas>
+    </div>
+    <div class="note" id="explain"></div>
+  </section>
+
+  <aside class="card">
+    <div class="eyebrow">Panel de medición</div>
+    <h2>Variables y resultados</h2>
+    <div id="controls" class="controls"></div>
+    <div class="metrics">
+      <div class="metric"><span id="l1">–</span><strong id="m1">–</strong></div>
+      <div class="metric"><span id="l2">–</span><strong id="m2">–</strong></div>
+      <div class="metric"><span id="l3">–</span><strong id="m3">–</strong></div>
+      <div class="metric"><span id="l4">–</span><strong id="m4">–</strong></div>
+    </div>
+    <div class="sectionlabel">Balance de energía</div>
+    <div class="stack" id="stack"></div>
+    <div class="baleq" id="baleq"></div>
+    <div id="bars"></div>
+    <div class="formula" id="formula"></div>
+    <div class="sectionlabel">Resultados del modelo</div>
+    <ul class="results" id="result"></ul>
+  </aside>
+</div>
+
+<div class="footer">Simulación educativa con modelos físicos simplificados. Sin rozamiento se conserva la energía mecánica (Ep + Ec); con rozamiento, la parte que se transforma en calor y sonido se contabiliza aparte y la energía total del sistema se conserva. Preparado para la investigación de Física de 5.º B.</div>
+</main>
+
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const W=800,H=485,GY=421,CW=800,CH=210;
+const canvas=$('scene'),ctx=canvas.getContext('2d');
+const chartEl=$('chart'),cctx=chartEl.getContext('2d');
+const C={amber:'#ffbf62',cyan:'#4dd9f4',red:'#ff7b87',green:'#65e2a0',violet:'#b9a3ff',text:'#eaf3ff',muted:'#9db0c9'};
+const FONT='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const SUB='₀₁₂₃₄₅₆₇₈₉';
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+/* ---------- Números en formato escolar: coma decimal y espacio para miles ---------- */
+function fmt(x,d=0){
+  if(!Number.isFinite(x))return '–';
+  const p=10**d;let r=Math.round(x*p)/p;if(Math.abs(r)<.5/p)r=0;
+  let [i,f]=Math.abs(r).toFixed(d).split('.');
+  if(i.length>=4)i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  return (r<0?'−':'')+i+(f?','+f:'');
+}
+function fmtT(x,d){const s=fmt(x,d);return s.includes(',')?s.replace(/0+$/,'').replace(/,$/,''):s}
+const eDec=ref=>ref<10?2:ref<1000?1:0;
+/* Redondeo que respeta la suma (para que Ep + Ec + Q coincida exactamente con el total mostrado) */
+function roundParts(vals,total,d){
+  const p=10**d,raw=vals.map(v=>Math.max(0,v)*p),fl=raw.map(Math.floor);
+  let diff=Math.round(total*p)-fl.reduce((s,x)=>s+x,0);
+  const ord=raw.map((r,i)=>[r-fl[i],i]).sort((a,b)=>b[0]-a[0]);
+  for(let j=0;diff>0&&j<ord.length;j++,diff--)fl[ord[j][1]]++;
+  for(let j=ord.length-1;diff<0&&j>=0;j--)if(fl[ord[j][1]]>0){fl[ord[j][1]]--;diff++}
+  return fl.map(x=>x/p);
+}
+/* Interpola una tabla de estados precalculados en el instante t */
+function sampler(T,R){
+  const n=T.length;
+  return t=>{
+    if(t<=T[0])return R[0];
+    if(t>=T[n-1])return R[n-1];
+    let lo=0,hi=n-1;
+    while(hi-lo>1){const mid=(lo+hi)>>1;if(T[mid]<=t)lo=mid;else hi=mid}
+    const a=R[lo],b=R[hi],dt=T[hi]-T[lo];
+    if(dt<=0)return b;
+    const f=(t-T[lo])/dt,o={};
+    for(const k in a)o[k]=a[k]+(b[k]-a[k])*f;
+    return o;
+  };
+}
+function niceNum(x){if(x<=0)return 1;const e=10**Math.floor(Math.log10(x)),f=x/e;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e}
+
+/* ---------- Lienzo nítido en pantallas de alta densidad ---------- */
+let DPR=1,TS=1,TSC=1,needsDraw=true;
+function setupCanvas(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
+  chartEl.width=Math.round(CW*DPR);chartEl.height=Math.round(CH*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);cctx.setTransform(DPR,0,0,DPR,0,0);
+  TS=clamp(560/(canvas.clientWidth||800),1,1.6);
+  TSC=clamp(560/(chartEl.clientWidth||800),1,1.7);
+  needsDraw=true;
+}
+
+/* ---------- Utilidades de dibujo ---------- */
+function rrect(c,x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function line(x1,y1,x2,y2,col,w=2){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+function dashed(x1,y1,x2,y2,col,w=1.5,dash=[6,6]){ctx.save();ctx.setLineDash(dash);line(x1,y1,x2,y2,col,w);ctx.restore()}
+function txt(s,x,y,o={}){
+  const size=(o.size||14)*TS;
+  ctx.save();
+  ctx.font=`${o.w||600} ${size}px ${FONT}`;ctx.textAlign=o.align||'left';ctx.textBaseline='middle';
+  if(o.bg){const tw=ctx.measureText(s).width,ph=size+9,bx=o.align==='center'?x-tw/2:o.align==='right'?x-tw:x;rrect(ctx,bx-7,y-ph/2,tw+14,ph,ph/2);ctx.fillStyle=o.bg;ctx.fill();if(o.border){ctx.strokeStyle=o.border;ctx.lineWidth=1;ctx.stroke()}}
+  if(o.glow){ctx.shadowColor=o.glow;ctx.shadowBlur=10}
+  ctx.fillStyle=o.color||'#dbe9f8';ctx.fillText(s,x,y);
+  ctx.restore();
+}
+function arrow(x1,y1,x2,y2,col,w=3){
+  const len=Math.hypot(x2-x1,y2-y1);if(len<6)return;
+  const a=Math.atan2(y2-y1,x2-x1),hs=Math.min(13,len*.5);
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap='round';ctx.shadowColor=col;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-Math.cos(a)*hs*.7,y2-Math.sin(a)*hs*.7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-Math.cos(a-.45)*hs,y2-Math.sin(a-.45)*hs);ctx.lineTo(x2-Math.cos(a+.45)*hs,y2-Math.sin(a+.45)*hs);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+function badge(ch,x,y,col){const r=13*TS;ctx.save();ctx.shadowColor=col;ctx.shadowBlur=14;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.restore();txt(ch,x,y+1,{size:14,w:900,align:'center',color:'#08131f'})}
+function sky(top='#0a1829',bot='#143049'){
+  const g=ctx.createLinearGradient(0,0,0,GY);g.addColorStop(0,top);g.addColorStop(1,bot);
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.strokeStyle='rgba(77,217,244,.055)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=40;x<W;x+=40){ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,GY)}
+  for(let y=GY-40;y>0;y-=40){ctx.moveTo(0,y+.5);ctx.lineTo(W,y+.5)}
+  ctx.stroke();ctx.restore();
+}
+function ground(){
+  const g=ctx.createLinearGradient(0,GY,0,H);g.addColorStop(0,'#123444');g.addColorStop(1,'#091722');
+  ctx.fillStyle=g;ctx.fillRect(0,GY,W,H-GY);
+  ctx.save();ctx.shadowColor=C.cyan;ctx.shadowBlur=8;line(0,GY,W,GY,'#4f8496',2.5);ctx.restore();
+}
+function floorWood(){
+  const g=ctx.createLinearGradient(0,GY,0,H);g.addColorStop(0,'#3b2a1b');g.addColorStop(1,'#1c130c');
+  ctx.fillStyle=g;ctx.fillRect(0,GY,W,H-GY);
+  ctx.strokeStyle='rgba(0,0,0,.28)';ctx.lineWidth=1;ctx.beginPath();
+  for(let r=0;r<3;r++){const y=GY+r*22;for(let x=(r%2)*40;x<W;x+=96){ctx.moveTo(x+.5,y);ctx.lineTo(x+.5,y+22)}ctx.moveTo(0,y+22.5);ctx.lineTo(W,y+22.5)}
+  ctx.stroke();line(0,GY,W,GY,'#c08a55',2);
+}
+let simT=0,rate=1;
+function hud(x,y,extra){
+  let s='t = '+fmt(simT,2)+' s';
+  if(extra)s+='  ·  '+extra;
+  if(rate!==1)s+=rate<1?'  ·  cámara lenta ×'+fmtT(rate,2):'  ·  ×'+fmtT(rate,2);
+  txt(s,x,y,{size:13,w:700,color:'#cfeaf7',bg:'rgba(6,14,26,.78)',border:'rgba(77,217,244,.35)'});
+}
+/* Mini panel de energía dentro del lienzo (útil en móviles) */
+function overlay(E){
+  const it=E.items,n=it.length,bw=22,gap=12,pad=12,w=pad*2+n*bw+(n-1)*gap,h=128,x0=W-w-12,y0=12;
+  ctx.save();rrect(ctx,x0,y0,w,h,12);ctx.fillStyle='rgba(6,14,26,.74)';ctx.fill();ctx.strokeStyle='rgba(77,217,244,.25)';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+  txt('Energía',x0+pad,y0+14,{size:11,w:800,color:C.muted});
+  const top=y0+28,bh=70;
+  it.forEach((e,i)=>{
+    const bx=x0+pad+i*(bw+gap),f=E.ref>0?clamp(e.val/E.ref,0,1):0;
+    ctx.fillStyle='#22324a';rrect(ctx,bx,top,bw,bh,5);ctx.fill();
+    if(f>.003){ctx.save();ctx.shadowColor=e.color;ctx.shadowBlur=10;ctx.fillStyle=e.color;rrect(ctx,bx,top+bh*(1-f),bw,bh*f,5);ctx.fill();ctx.restore()}
+    txt(e.short,bx+bw/2,top+bh+14,{size:11,w:800,align:'center',color:e.color});
+  });
+}
+
+/* ---------- Sistema de partículas (chispas, polvo, calor, textos) ---------- */
+let parts=[],spawnAcc=0;
+function addP(p){if(parts.length<500)parts.push(Object.assign({t:0,life:1,vx:0,vy:0,g:0,r:2,color:'#fff',kind:'dot'},p))}
+function stepP(dt){
+  if(dt<=0)return;
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];p.t+=dt;
+    if(p.t>=p.life){parts.splice(i,1);continue}
+    p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.drag){const k=Math.max(0,1-p.drag*dt);p.vx*=k;p.vy*=k}
+  }
+}
+function drawP(){
+  for(const p of parts){
+    const k=1-p.t/p.life;
+    ctx.save();ctx.globalAlpha=Math.max(0,k);
+    if(p.kind==='ring'){const r=p.r+(p.r2-p.r)*(1-k);ctx.strokeStyle=p.color;ctx.lineWidth=3*k+.5;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*(p.flat||1),0,0,Math.PI*2);ctx.stroke()}
+    else if(p.kind==='text'){ctx.globalAlpha=clamp(k*1.8,0,1);txt(p.text,p.x,p.y,{size:p.size||15,w:800,align:'center',color:p.color,glow:p.color,bg:'rgba(6,14,26,.55)'})}
+    else if(p.kind==='spark'){ctx.strokeStyle=p.color;ctx.lineWidth=p.r;ctx.lineCap='round';ctx.shadowColor='#ffb347';ctx.shadowBlur=10;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*.05,p.y-p.vy*.05);ctx.stroke()}
+    else{ctx.fillStyle=p.color;if(p.glow){ctx.shadowColor=p.color;ctx.shadowBlur=8}ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.3,p.r*(p.shrink?k:1)),0,Math.PI*2);ctx.fill()}
+    ctx.restore();
+  }
+}
+
+/* ---------- Controles del panel ---------- */
+function slider(key,label,min,max,step,val,unit,dec){
+  return `<label class="ctl"><span class="controlhead"><span>${label}</span><output id="o_${key}">${fmt(val,dec)}${unit?' '+unit:''}</output></span><input type="range" data-key="${key}" data-dec="${dec}" data-unit="${unit}" min="${min}" max="${max}" step="${step}" value="${val}"></label>`;
+}
+function toggle(key,label,on){return `<label class="switch"><input type="checkbox" data-key="${key}"${on?' checked':''}><span>${label}</span></label>`}
+function seg(key,opts,val,aria){return `<div class="seg" role="group" aria-label="${aria}">${opts.map(([v,l])=>`<button type="button" data-seg="${key}" data-val="${v}" aria-pressed="${v===val}">${l}</button>`).join('')}</div>`}
+
+/* =====================================================================
+   1) MONTAÑA RUSA — el carrito baja por la vía con la aceleración real
+      a = g·sen(θ); la rapidez en cada punto cumple v = √(2·g·Δh)
+   ===================================================================== */
+const coaster={
+  num:'01',title:'Montaña rusa',
+  desc:'El carrito parte del reposo en A y desciende hasta B: la energía potencial gravitatoria se transforma en energía cinética.',
+  controls:c=>slider('mass','Masa del carrito',50,500,10,c.mass,'kg',0)
+    +slider('h','Altura inicial (punto A)',10,35,1,c.h,'m',0)
+    +toggle('friction','Activar rozamiento: el 20 % de la energía liberada en el descenso se transforma en calor y sonido',c.friction)
+    +'<p class="subtle">Altura final (punto B): 5 m · g = 10 m/s²</p>',
+  build(c){
+    const g=10,lo=5,hi=c.h,m=c.mass,k=c.friction?.8:1,dh=hi-lo,L=54,S=10,X0=110,N=540,E0=m*g*hi,d=eDec(E0);
+    // Perfil de la vía: h(u) = 5 + Δh·(1−u)²·(1+u), siempre descendente de A a B
+    const P=[];let s=0;
+    for(let i=0;i<=N;i++){const u=i/N,x=u*L,h=lo+dh*(1-u)*(1-u)*(1+u);if(i)s+=Math.hypot(x-P[i-1].x,h-P[i-1].h);P.push({x,h,s,a:0})}
+    for(let i=0;i<=N;i++){const A=P[Math.max(0,i-1)],B=P[Math.min(N,i+1)];P[i].a=Math.atan2(B.h-A.h,B.x-A.x)}
+    const SL=s;
+    const geom=sp=>{let a=0,b=N;while(b-a>1){const mid=(a+b)>>1;if(P[mid].s<=sp)a=mid;else b=mid}const A=P[a],B=P[b],f=clamp((sp-A.s)/(B.s-A.s),0,1);return{x:A.x+(B.x-A.x)*f,h:A.h+(B.h-A.h)*f,a:A.a+(B.a-A.a)*f}};
+    // Integración del movimiento a lo largo de la vía
+    const T=[],R=[],dt=1/2000,rec=1/240;let t=0,sp=0,v=0,nx=0;
+    while(t<300){
+      if(t>=nx-1e-9){T.push(t);R.push(geom(sp));nx+=rec}
+      v+=-k*g*Math.sin(geom(sp).a)*dt;sp+=v*dt;t+=dt;
+      if(sp>=SL){T.push(t);R.push(geom(SL));break}
+    }
+    const dur=t,at=sampler(T,R);
+    const speed=st=>Math.sqrt(Math.max(0,2*k*g*(hi-st.h)));
+    const vB=Math.sqrt(2*k*g*dh);
+    const scr=P.map(p=>({x:X0+p.x*S,y:GY-p.h*S,a:p.a}));
+    const ay=GY-hi*S,by=GY-lo*S,bx=X0+L*S;
+    const nrm=a=>({x:-Math.sin(a),y:-Math.cos(a)}); // normal hacia arriba (pantalla)
+    const trackPath=off=>{ctx.beginPath();for(let i=0;i<=N;i+=2){const p=scr[i],n=nrm(p.a),X=p.x+n.x*off,Y=p.y+n.y*off;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.lineTo(W+12,by-off)};
+    function drawCart(v){
+      ctx.fillStyle='#0c1824';ctx.strokeStyle='#9fdbe8';ctx.lineWidth=1.5;
+      for(const wx of[-16,16]){ctx.beginPath();ctx.arc(wx,-9,5.5,0,Math.PI*2);ctx.fill();ctx.stroke()}
+      const up=v>9;ctx.lineCap='round';
+      for(const px of[-11,9]){
+        if(up){ctx.strokeStyle='#ffd8b0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px-4,-36);ctx.lineTo(px-9,-55);ctx.moveTo(px+4,-36);ctx.lineTo(px+8,-55);ctx.stroke()}
+        ctx.fillStyle='#ffd8b0';ctx.beginPath();ctx.arc(px,-41,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#24384b';ctx.beginPath();ctx.arc(px,-43,6.2,Math.PI,0);ctx.fill();
+      }
+      const gr=ctx.createLinearGradient(0,-36,0,-12);gr.addColorStop(0,'#8af0ff');gr.addColorStop(1,'#1c93b0');
+      ctx.fillStyle=gr;rrect(ctx,-29,-35,56,22,7);ctx.fill();
+      ctx.beginPath();ctx.moveTo(25,-35);ctx.quadraticCurveTo(39,-31,36,-13);ctx.lineTo(25,-13);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(220,250,255,.85)';ctx.lineWidth=1.2;rrect(ctx,-29,-35,56,22,7);ctx.stroke();
+      ctx.fillStyle=C.amber;ctx.fillRect(-29,-25,63,3);
+    }
+    return{
+      dur,at,
+      energy:st=>{const drop=hi-st.h;return{ref:E0,total:E0,items:[
+        {label:'Potencial gravitatoria',short:'Ep',val:m*g*st.h,color:C.amber,stack:1},
+        {label:'Cinética',short:'Ec',val:k*m*g*drop,color:C.cyan,stack:1},
+        {label:'Calor y sonido (rozamiento)',short:'Q',val:(1-k)*m*g*drop,color:C.red,stack:1}]}},
+      totalLine:'Energía total',eqNote:'se conserva',
+      metrics:(st,t)=>[['Tiempo',fmt(t,2)+' s'],['Altura',fmt(st.h,1)+' m'],['Rapidez',fmt(speed(st),2)+' m/s'],['Energía total',fmt(E0,d)+' J']],
+      formula:'Em = Ep + Ec + Q = constante\nEp = m·g·h    Ec = ½·m·v²    v(B) = √(2·g·Δh)',
+      results:[
+        `Ep(A) = m·g·h = ${fmt(m)} · 10 · ${fmt(hi)} = <b>${fmt(E0,d)} J</b>`,
+        `Ep(B) = ${fmt(m)} · 10 · 5 = <b>${fmt(m*g*lo,d)} J</b>`,
+        c.friction?`Q (20 % del descenso) = 0,2 · ${fmt(m)} · 10 · ${fmt(dh)} = <b>${fmt(.2*m*g*dh,d)} J</b>`:'Sin rozamiento: Q = <b>0 J</b>',
+        `Ec(B) = Ep(A) − Ep(B)${c.friction?' − Q':''} = <b>${fmt(k*m*g*dh,d)} J</b>`,
+        `v(B) = √(2·Ec/m) = <b>${fmt(vB,2)} m/s</b> (${fmt(vB*3.6,1)} km/h)`,
+        `Tiempo de descenso de A a B: <b>${fmt(dur,2)} s</b>`
+      ],
+      note:c.friction
+        ?'<b>Con rozamiento</b>, el 20 % de la energía liberada en el descenso se transforma en calor y sonido (las chispas). La energía mecánica disminuye, pero la <b>energía total</b> Ep + Ec + Q se conserva: fíjate en la línea blanca de la gráfica.'
+        :'<b>Sin rozamiento</b>, la energía mecánica se conserva: lo que pierde la Ep lo gana la Ec. La rapidez en B <b>no depende de la masa</b> (v = √(2·g·Δh)); la masa solo cambia cuántos julios hay en juego. Prueba a cambiar la masa: las barras cambian, la rapidez no.',
+      events:[{t:dur,fn:()=>{
+        addP({kind:'ring',x:bx,y:by-20,r:8,r2:72,life:.9,color:C.cyan});
+        addP({kind:'ring',x:bx,y:by-20,r:4,r2:40,life:.6,color:'#ffffff'});
+        addP({kind:'text',text:'¡Llegada a B!  v = '+fmt(vB,2)+' m/s',x:bx-50,y:by-125,vy:-18,life:2.4,color:C.cyan,size:15});
+      }}],
+      tick(st,dt){
+        if(!c.friction)return;
+        const v=speed(st);if(v<1)return;
+        const sx=X0+st.x*S,sy=GY-st.h*S,tx=Math.cos(st.a),ty=-Math.sin(st.a),n=nrm(st.a);
+        spawnAcc+=v*dt*14;
+        while(spawnAcc>=1){spawnAcc--;const off=Math.random()<.5?-16:16,px=sx+tx*off+n.x*4,py=sy+ty*off+n.y*4,spd=rnd(90,220);
+          addP({kind:'spark',x:px,y:py,vx:-tx*spd+rnd(-40,40),vy:-ty*spd-rnd(40,130),g:560,life:rnd(.3,.6),r:rnd(1.6,2.8),color:['#fff1b8','#ffd27a','#ff9a5c'][Math.floor(Math.random()*3)]})}
+      },
+      hud:()=>hud(16,453),
+      draw(st,t){
+        sky();ground();
+        const v=speed(st);
+        ctx.save();ctx.lineCap='round';
+        // estación B (fondo)
+        ctx.fillStyle='rgba(77,217,244,.05)';ctx.fillRect(636,by-60,146,60);
+        line(642,GY,642,by-60,'#2e4c60',4);line(776,GY,776,by-60,'#2e4c60',4);
+        ctx.fillStyle='#1d374b';ctx.beginPath();ctx.moveTo(626,by-58);ctx.lineTo(792,by-58);ctx.lineTo(780,by-76);ctx.lineTo(638,by-76);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='rgba(77,217,244,.4)';ctx.lineWidth=1.5;ctx.stroke();
+        // torre de salida A
+        line(62,GY,62,ay+6,'#2e4c60',3);line(104,GY,104,ay+6,'#2e4c60',3);
+        ctx.strokeStyle='rgba(46,76,96,.8)';ctx.lineWidth=1.5;ctx.beginPath();
+        for(let y=GY;y>ay+12;y-=32){const y2=Math.max(ay+6,y-32);ctx.moveTo(62,y);ctx.lineTo(104,y2);ctx.moveTo(104,y);ctx.lineTo(62,y2);ctx.moveTo(62,y2);ctx.lineTo(104,y2)}
+        ctx.stroke();
+        ctx.fillStyle='#3a5a70';ctx.fillRect(52,ay+3,62,6);
+        // soportes de la vía
+        let prev=null;
+        for(let xm=3;xm<L-.5;xm+=3){const p=scr[Math.round(xm/L*N)];line(p.x,p.y+8,p.x,GY,'#2a475a',3);if(prev)line(prev.x,GY-2,p.x,p.y+14,'rgba(42,71,90,.65)',1.5);prev=p}
+        for(const x of[690,740,790])line(x,by+8,x,GY,'#2a475a',3);
+        ctx.restore();
+        // vía: estructura, traviesas y rieles brillantes
+        ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+        trackPath(0);ctx.strokeStyle='#3b1f2b';ctx.lineWidth=11;ctx.stroke();
+        ctx.strokeStyle='#8a5560';ctx.lineWidth=2.5;ctx.beginPath();
+        for(let i=0;i<=N;i+=10){const p=scr[i],n=nrm(p.a);ctx.moveTo(p.x-n.x*5,p.y-n.y*5);ctx.lineTo(p.x+n.x*6,p.y+n.y*6)}
+        for(let x=bx+12;x<W;x+=12){ctx.moveTo(x,by+5);ctx.lineTo(x,by-6)}
+        ctx.stroke();
+        ctx.shadowColor='#ff8d7e';ctx.shadowBlur=8;
+        trackPath(4.5);ctx.strokeStyle='#ffc0a5';ctx.lineWidth=3;ctx.stroke();
+        trackPath(-4);ctx.strokeStyle='#ff8d7e';ctx.lineWidth=2.2;ctx.stroke();
+        ctx.restore();
+        // estela luminosa detrás del carrito
+        ctx.save();ctx.lineCap='round';ctx.shadowColor=C.cyan;ctx.shadowBlur=12;ctx.strokeStyle=C.cyan;
+        let pp=null;
+        for(let i=0;i<=18;i++){const tau=t-i*.03;if(tau<0)break;const s2=at(tau),n=nrm(s2.a),p={x:X0+s2.x*S+n.x*20,y:GY-s2.h*S+n.y*20};
+          if(pp){ctx.globalAlpha=.45*(1-i/18);ctx.lineWidth=10*(1-i/22);ctx.beginPath();ctx.moveTo(pp.x,pp.y);ctx.lineTo(p.x,p.y);ctx.stroke()}pp=p}
+        ctx.restore();
+        const sx=X0+st.x*S,sy=GY-st.h*S,n=nrm(st.a),tx=Math.cos(st.a),ty=-Math.sin(st.a);
+        // indicador de altura
+        dashed(sx,sy+9,sx,GY,'rgba(255,191,98,.75)',1.5,[5,5]);
+        txt('h = '+fmt(st.h,1)+' m',sx+10,(sy+GY)/2+10,{size:13,w:700,color:C.amber,bg:'rgba(6,14,26,.7)'});
+        // carrito (girado según la pendiente) + líneas de velocidad
+        ctx.save();ctx.translate(sx,sy);ctx.rotate(-st.a);
+        if(v>4){ctx.save();ctx.strokeStyle='#eaf3ff';ctx.lineCap='round';ctx.lineWidth=1.6;
+          for(let i=0;i<5;i++){const ph=(t*v*9+i*29)%46,len=Math.min(70,v*3.4)*(.6+.2*(i%3));ctx.globalAlpha=clamp((v-4)/14,0,.55)*(1-ph/46);ctx.beginPath();ctx.moveTo(-34-ph,-14-i*6);ctx.lineTo(-34-ph-len,-14-i*6);ctx.stroke()}
+          ctx.restore()}
+        drawCart(v);
+        ctx.restore();
+        // vector velocidad (tangente a la vía)
+        if(v>.3){const x1=sx+n.x*24+tx*40,y1=sy+n.y*24+ty*40,len=Math.min(120,v*4.5);arrow(x1,y1,x1+tx*len,y1+ty*len,C.cyan,3);txt('v',x1+tx*len+n.x*14,y1+ty*len+n.y*14,{size:13,w:800,color:C.cyan,align:'center'})}
+        // marcas A y B
+        badge('A',30,ay-2,C.amber);txt(fmt(hi)+' m',30,ay+24*TS,{size:13,w:700,color:C.amber,align:'center'});
+        badge('B',707,by-94,C.amber);txt('5 m',726,by-94,{size:13,w:700,color:C.amber});
+      }
+    };
+  }
+};
+
+/* =====================================================================
+   2) PELOTA — caída libre con tiempos reales, rebotes con coeficiente e
+      y (opcional) resistencia del aire F = ½·ρ·Cd·A·v²
+   ===================================================================== */
+function simBall(m,H0,e,air,g){
+  const r=.12,kAir=air?.5*1.2*.47*Math.PI*r*r/m:0,dt=1/4000,rec=1/240,maxT=12;
+  const T=[],R=[],imp=[],peaks=[{t:0,h:H0}];
+  let t=0,y=H0,v=0,q=0,nx=0,rest=false;
+  while(t<maxT){
+    if(t>=nx-1e-12){T.push(t);R.push({y,v,q});nx+=rec}
+    const a=-g-kAir*v*Math.abs(v);
+    const yn=y+v*dt+.5*a*dt*dt,vn=v+a*dt;
+    if(yn<=0&&v<=0){
+      // instante exacto del impacto dentro del paso
+      const tau=clamp((-v-Math.sqrt(Math.max(0,v*v-2*a*y)))/a,0,dt);
+      const vi=v+a*tau;t+=tau;
+      T.push(t);R.push({y:0,v:vi,q});
+      let va=-e*vi;if(va<.12)va=0;
+      const lost=.5*m*(vi*vi-va*va);q+=lost;imp.push({t,v:-vi,q:lost});
+      y=0;v=va;T.push(t);R.push({y,v,q});
+      if(va===0){rest=true;break}
+      continue;
+    }
+    if(v>0&&vn<=0){const tau=-v/a;peaks.push({t:t+tau,h:y+v*tau+.5*a*tau*tau})}
+    y=yn;v=vn;t+=dt;
+  }
+  if(rest){t+=.8;T.push(t);R.push({y:0,v:0,q})}
+  return{T,R,imp,peaks,rest,dur:t,at:sampler(T,R)};
+}
+function drawBall(x,yb,sx,sy,alpha,ghost){
+  const r=22;
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,yb);ctx.scale(sx,sy);ctx.translate(0,-r);
+  const g=ctx.createRadialGradient(-7,-8,3,0,0,r);g.addColorStop(0,'#ffb067');g.addColorStop(.55,'#e2772f');g.addColorStop(1,'#8f3f16');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.clip();ctx.strokeStyle='#3b1a0c';ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.moveTo(-r,0);ctx.lineTo(r,0);ctx.moveTo(0,-r);ctx.lineTo(0,r);ctx.stroke();
+  ctx.beginPath();ctx.arc(-r*1.25,0,r*.95,-.9,.9);ctx.stroke();
+  ctx.beginPath();ctx.arc(r*1.25,0,r*.95,Math.PI-.9,Math.PI+.9);ctx.stroke();
+  ctx.restore();
+  if(ghost){ctx.setLineDash([4,4]);ctx.strokeStyle='#eaf3ff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,r+3,0,Math.PI*2);ctx.stroke()}
+  ctx.restore();
+}
+const ball={
+  num:'02',title:'Pelota',
+  desc:'Se deja caer una pelota de 24 cm de diámetro: la energía potencial se transforma en cinética y, en cada bote, una parte se transforma en calor y sonido.',
+  controls:c=>slider('mass','Masa de la pelota',.1,5,.1,c.mass,'kg',1)
+    +slider('h','Altura inicial',1,20,.5,c.h,'m',1)
+    +slider('e','Coeficiente de restitución (e)',.4,1,.05,c.e,'',2)
+    +toggle('air','Resistencia del aire (con aire, la masa sí influye en la caída)',c.air)
+    +'<p class="subtle">g = 9,8 m/s² · pelota de 24 cm · Cd = 0,47 · ρ(aire) = 1,2 kg/m³</p>',
+  build(c){
+    const g=9.8,m=c.mass,H0=c.h,e=c.e,E0=m*g*H0,d=eDec(E0);
+    const real=simBall(m,H0,e,c.air,g),ideal=c.air?simBall(m,H0,e,false,g):null;
+    const Pm=Math.min(60,320/H0),BX=430,GX=545,R=22,TSP=95;
+    const ys=y=>GY-y*Pm;
+    const i1=real.imp[0],p1=real.peaks[1];
+    const vTheory=Math.sqrt(2*g*H0),tTheory=Math.sqrt(2*H0/g);
+    const events=real.imp.map(im=>({t:im.t,fn:()=>{
+      const sp=clamp(im.v/12,.3,1.2);
+      addP({kind:'ring',x:BX,y:GY+2,r:8,r2:40+50*sp,flat:.28,life:.7,color:'#f3d7b0'});
+      for(let i=0;i<Math.round(8+14*sp);i++)addP({x:BX+rnd(-18,18),y:GY-2,vx:rnd(-170,170)*sp,vy:-rnd(40,170)*sp,g:420,life:rnd(.4,.85),r:rnd(1.2,2.6),color:Math.random()<.5?'#e9cfa7':'#bfa27a',shrink:1});
+      if(im.q>E0*.003)addP({kind:'text',text:'−'+fmt(im.q,d)+' J',x:BX+64,y:GY-28,vy:-34,life:1.5,color:C.red,size:14});
+    }}));
+    if(ideal)ideal.imp.forEach(im=>events.push({t:im.t,fn:()=>addP({kind:'ring',x:GX,y:GY+2,r:6,r2:44,flat:.28,life:.55,color:'rgba(234,243,255,.6)'})}));
+    const SUBs=i=>i<10?SUB[i]:String(i);
+    const resultsList=[
+      `E inicial = m·g·h = ${fmt(m,1)} · 9,8 · ${fmt(H0,1)} = <b>${fmt(E0,d)} J</b>`,
+      `1.er impacto: t = <b>${fmt(i1.t,2)} s</b> · v = <b>${fmt(i1.v,2)} m/s</b>`,
+      c.air?`Sin aire sería: t = ${fmt(ideal.imp[0].t,2)} s · v = ${fmt(ideal.imp[0].v,2)} m/s (igual para cualquier masa)`
+           :`Teoría: v = √(2·g·h) = ${fmt(vTheory,2)} m/s · t = √(2h/g) = ${fmt(tTheory,2)} s (no dependen de la masa)`,
+      p1?`Altura del 1.er rebote: <b>${fmt(p1.h,2)} m</b>`+(c.air?'':` (= e²·h = ${fmtT(e*e,4)} · ${fmt(H0,1)})`):'',
+      `Energía disipada en el 1.er bote: <b>${fmt(i1.q,d)} J</b> (${fmt(i1.q/E0*100,0)} %)`,
+      real.rest?`Se detiene tras ${real.imp.length} botes, en t = ${fmt(real.dur-.8,2)} s`:`Botes mostrados: ${real.imp.length} (la simulación dura 12 s)`
+    ].filter(Boolean);
+    return{
+      dur:real.dur,at:real.at,
+      energy:st=>{
+        const Ep=m*g*st.y,Ec=.5*m*st.v*st.v;
+        const items=[{label:'Potencial gravitatoria',short:'Ep',val:Ep,color:C.amber,stack:1},{label:'Cinética',short:'Ec',val:Ec,color:C.cyan,stack:1}];
+        if(c.air){const Qi=Math.min(st.q,Math.max(0,E0-Ep-Ec));items.push({label:'Calor y sonido (botes)',short:'Qb',val:Qi,color:C.red,stack:1},{label:'Rozamiento con el aire',short:'Qa',val:Math.max(0,E0-Ep-Ec-Qi),color:C.violet,stack:1})}
+        else items.push({label:'Calor y sonido (botes)',short:'Q',val:Math.max(0,E0-Ep-Ec),color:C.red,stack:1});
+        return{ref:E0,total:E0,items};
+      },
+      totalLine:'Energía total',eqNote:'se conserva',
+      metrics:(st,t)=>[['Tiempo',fmt(t,2)+' s'],['Altura',fmt(st.y,2)+' m'],['Rapidez',fmt(Math.abs(st.v),2)+' m/s'],['Energía inicial',fmt(E0,d)+' J']],
+      formula:'Ep = m·g·h    Ec = ½·m·v²\nAltura del rebote = e² · altura anterior'+(c.air?'\nFuerza del aire = ½·ρ·Cd·A·v²  (no depende de la masa)':''),
+      results:resultsList,
+      note:c.air
+        ?'<b>Con resistencia del aire la masa sí importa.</b> La fuerza del aire depende del tamaño y la rapidez de la pelota, no de su masa. Para la misma pelota, cuanto más pesada, más pequeña es esa fuerza frente a su peso: la pesada cae casi como en el vacío y la ligera se retrasa. La pelota translúcida muestra la caída <b>sin aire</b>. Prueba 0,1 kg y luego 5 kg.'
+        :'<b>Sin aire, todas las masas caen igual</b> (Galileo): la rapidez al llegar al suelo es v = √(2·g·h) y no depende de la masa. La masa solo cambia la energía (Ep = m·g·h). Activa la <b>resistencia del aire</b> para ver cuándo sí influye la masa. La estela naranja dibuja la altura frente al tiempo, como una foto estroboscópica (un punto cada 0,1 s).',
+      events,
+      hud:()=>hud(16,453,'botes: '+real.imp.filter(i=>i.t<=simT).length),
+      draw(st,t){
+        sky('#0b1a2e','#152f47');floorWood();
+        // regla de alturas
+        const step=H0<=2?.5:H0<=6?1:H0<=12?2:5;
+        ctx.save();line(30,GY,30,ys(H0)-14,'#5f7f97',1.5);
+        for(let h=0;h<=H0+1e-9;h+=step){const y=ys(h);line(26,y,34,y,'#7f9db4',1.5);txt(fmtT(h,1)+' m',38,y,{size:11,w:600,color:'#7f9db4'})}
+        ctx.restore();
+        // altura inicial y alturas de cada rebote
+        dashed(70,ys(H0),620,ys(H0),'rgba(255,191,98,.7)',1.5);
+        txt('h'+SUB[0]+' = '+fmtT(H0,1)+' m',74,ys(H0)-11,{size:12,w:700,color:C.amber});
+        let lastY=ys(H0),shown=0;
+        for(let i=1;i<real.peaks.length;i++){const p=real.peaks[i];if(p.t>t)break;if(p.h<.02)continue;const y=ys(p.h);
+          dashed(70,y,620,y,'rgba(77,217,244,.45)',1.2,[3,6]);
+          if(shown<4&&Math.abs(y-lastY)>16*TS){txt('h'+SUBs(i)+' = '+fmt(p.h,2)+' m',74,y-10,{size:12,w:700,color:'#8fe6f7'});lastY=y;shown++}}
+        // estela: altura en función del tiempo + puntos estroboscópicos
+        ctx.save();
+        const gr=ctx.createLinearGradient(BX-3*TSP,0,BX,0);gr.addColorStop(0,'rgba(255,159,90,0)');gr.addColorStop(1,'rgba(255,159,90,.85)');
+        ctx.strokeStyle=gr;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();
+        let first=true;for(let tau=Math.max(0,t-3);tau<t;tau+=1/120){const s2=real.at(tau),X=BX-(t-tau)*TSP,Y=ys(s2.y)-1;if(first){ctx.moveTo(X,Y);first=false}else ctx.lineTo(X,Y)}
+        if(!first){ctx.lineTo(BX,ys(st.y)-1);ctx.stroke()}
+        for(let kk=Math.floor(t/.1);kk>=0;kk--){const tau=kk*.1;if(tau<t-3)break;const X=BX-(t-tau)*TSP;if(X>BX-R)continue;const s2=real.at(tau);ctx.globalAlpha=.2+.65*(1-(t-tau)/3);ctx.fillStyle='#ffb27a';ctx.beginPath();ctx.arc(X,ys(s2.y)-1,3.2,0,Math.PI*2);ctx.fill()}
+        ctx.restore();
+        // sombras
+        const shadow=(x,y)=>{const f=clamp(y/H0,0,1);ctx.save();ctx.fillStyle=`rgba(0,0,0,${.5-.32*f})`;ctx.beginPath();ctx.ellipse(x,GY+3,R*(1.25-.55*f),4.5,0,0,Math.PI*2);ctx.fill();ctx.restore()};
+        // pelota de referencia sin aire
+        if(ideal){const gs=ideal.at(t);shadow(GX,gs.y);drawBall(GX,ys(gs.y),1,1,.33,true);txt('sin aire',GX+R+9,ys(gs.y)-R,{size:12,w:700,color:C.muted})}
+        shadow(BX,st.y);
+        // aplastamiento al botar
+        let sxs=1,sys=1;
+        for(const im of real.imp){if(im.t>t)break;const dd=t-im.t;if(dd<.07){const s=(1-dd/.07)*clamp(im.v/22,.06,.32);sxs=1+s;sys=1-s}}
+        // líneas de aire alrededor de la pelota
+        if(c.air&&Math.abs(st.v)>1.5){const dir=st.v>0?1:-1,sp=Math.abs(st.v),cy=ys(st.y)-R;ctx.save();ctx.strokeStyle='#dcefff';ctx.lineWidth=1.3;ctx.lineCap='round';
+          for(let i=0;i<6;i++){const ox=[-16,-7,3,12,-12,8][i],ph=((t*sp*55+i*23)%40)/40,y0=cy+dir*(R+4+ph*30),len=Math.min(36,sp*2.4);ctx.globalAlpha=(1-ph)*clamp(sp/12,0,.55);ctx.beginPath();ctx.moveTo(BX+ox,y0);ctx.lineTo(BX+ox,y0+dir*len);ctx.stroke()}
+          ctx.restore()}
+        drawBall(BX,ys(st.y),sxs,sys,1,false);
+        txt(fmt(m,1)+' kg',BX+R+9,ys(st.y)-R,{size:12,w:800,color:'#ffd2a8'});
+        // vector velocidad
+        if(Math.abs(st.v)>.15){const ax=BX-R-16,cy=ys(st.y)-R,len=Math.min(150,Math.abs(st.v)*8),dir=st.v>0?-1:1;arrow(ax,cy,ax,cy+dir*len,C.cyan,3);txt('v',ax-13,cy+dir*len*.55,{size:13,w:800,color:C.cyan,align:'center'})}
+      }
+    };
+  }
+};
+
+/* =====================================================================
+   3) BICICLETA — acelerar (química → cinética + calor corporal)
+      o frenar (cinética → calor en los frenos), con fuerza constante
+   ===================================================================== */
+function ik(hx,hy,fx,fy,l1,l2,pickLower){
+  const dx=fx-hx,dy=fy-hy,d=Math.min(Math.hypot(dx,dy),l1+l2-.01),a=Math.atan2(dy,dx),b=Math.acos(clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1));
+  const k1={x:hx+l1*Math.cos(a-b),y:hy+l1*Math.sin(a-b)},k2={x:hx+l1*Math.cos(a+b),y:hy+l1*Math.sin(a+b)};
+  return pickLower?(k1.y>k2.y?k1:k2):(k1.x>k2.x?k1:k2);
+}
+function wheel(x,y,ang,heat,blur){
+  ctx.save();ctx.translate(x,y);
+  ctx.lineWidth=7;ctx.strokeStyle='#0a131c';ctx.beginPath();ctx.arc(0,0,31,0,Math.PI*2);ctx.stroke();
+  ctx.lineWidth=2.4;ctx.strokeStyle='#7ce1f1';ctx.shadowColor='#7ce1f1';ctx.shadowBlur=6;ctx.beginPath();ctx.arc(0,0,27,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
+  const n=blur>.08?6:1;ctx.strokeStyle='#a9dbe6';ctx.lineWidth=1.2;
+  for(let j=0;j<n;j++){const a0=ang-(n>1?blur*j/(n-1):0);ctx.globalAlpha=n>1?.24:.85;ctx.beginPath();for(let i=0;i<8;i++){const a=a0+i*Math.PI/4;ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*26,Math.sin(a)*26)}ctx.stroke()}
+  ctx.globalAlpha=1;ctx.fillStyle='#cfd8e3';ctx.beginPath();ctx.arc(0,0,3.5,0,Math.PI*2);ctx.fill();
+  const ca=-Math.PI/2-.35,cx=Math.cos(ca)*27,cy=Math.sin(ca)*27;
+  if(heat>0){
+    ctx.globalCompositeOperation='lighter';
+    const gl=ctx.createRadialGradient(cx,cy,0,cx,cy,26);gl.addColorStop(0,`rgba(255,200,120,${.9*heat})`);gl.addColorStop(.4,`rgba(255,110,60,${.55*heat})`);gl.addColorStop(1,'rgba(255,80,40,0)');
+    ctx.fillStyle=gl;ctx.beginPath();ctx.arc(cx,cy,26,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=`rgba(255,120,70,${.6*heat})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,27,0,Math.PI*2);ctx.stroke();
+    ctx.globalCompositeOperation='source-over';
+  }
+  ctx.fillStyle='#0b1520';ctx.translate(cx,cy);ctx.rotate(ca);rrect(ctx,-5,-4,10,8,2);ctx.fill();
+  ctx.restore();
+}
+function drawBike(bx,gy,wa,ca,heat,blur){
+  const r=34,ry=gy-r,RX=bx-52,FX=bx+52,BB={x:bx-8,y:gy-28},S={x:bx-30,y:gy-92},HT={x:bx+34,y:gy-94},HB={x:bx+38,y:gy-78},HIP={x:bx-30,y:gy-104},SH={x:bx+10,y:gy-148},HAND={x:bx+46,y:gy-100};
+  const ped=a=>({x:BB.x+Math.cos(a)*16,y:BB.y+Math.sin(a)*16});
+  const leg=(a,col,w)=>{const p=ped(a),k=ik(HIP.x,HIP.y,p.x,p.y,46,47,false),fa=Math.atan2(p.y-k.y,p.x-k.x),f={x:k.x+Math.cos(fa)*47,y:k.y+Math.sin(fa)*47};
+    ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(HIP.x,HIP.y);ctx.lineTo(k.x,k.y);ctx.lineTo(f.x,f.y);ctx.stroke();
+    ctx.fillStyle='#0b1520';rrect(ctx,f.x-7,f.y-3,15,6,3);ctx.fill()};
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(bx,gy+3,100,6,0,0,Math.PI*2);ctx.fill();
+  // pierna y biela del lado lejano
+  leg(ca+Math.PI,'#1f7d92',9);{const p=ped(ca+Math.PI);line(BB.x,BB.y,p.x,p.y,'#6b7f90',3)}
+  wheel(RX,ry,wa,heat,blur);wheel(FX,ry,wa,heat,blur);
+  // cuadro
+  ctx.save();ctx.strokeStyle=C.amber;ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';ctx.shadowColor='rgba(255,191,98,.55)';ctx.shadowBlur=6;ctx.beginPath();
+  ctx.moveTo(RX,ry);ctx.lineTo(BB.x,BB.y);ctx.lineTo(S.x,S.y);ctx.lineTo(RX,ry);
+  ctx.moveTo(S.x+2,S.y+4);ctx.lineTo(HT.x,HT.y+2);
+  ctx.moveTo(HB.x,HB.y);ctx.lineTo(BB.x,BB.y);
+  ctx.moveTo(HT.x,HT.y);ctx.lineTo(FX,ry);
+  ctx.stroke();ctx.restore();
+  ctx.strokeStyle='#cfd8e3';ctx.lineWidth=2;ctx.beginPath();ctx.arc(BB.x,BB.y,9,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='rgba(200,210,220,.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(BB.x,BB.y-9);ctx.lineTo(RX,ry-5);ctx.moveTo(BB.x,BB.y+9);ctx.lineTo(RX,ry+5);ctx.stroke();
+  ctx.fillStyle='#0b1520';rrect(ctx,S.x-14,S.y-10,26,6,3);ctx.fill();
+  ctx.strokeStyle='#cfd8e3';ctx.lineWidth=3.5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(HT.x,HT.y);ctx.lineTo(bx+40,gy-102);ctx.quadraticCurveTo(bx+56,gy-102,bx+51,gy-88);ctx.stroke();
+  // ciclista
+  ctx.strokeStyle=C.cyan;ctx.lineWidth=15;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(HIP.x,HIP.y);ctx.quadraticCurveTo(HIP.x+10,SH.y+4,SH.x,SH.y);ctx.stroke();
+  leg(ca,'#39bfd9',10);{const p=ped(ca);line(BB.x,BB.y,p.x,p.y,'#cfd8e3',3.5)}
+  const el=ik(SH.x,SH.y,HAND.x,HAND.y,32,32,true);
+  ctx.strokeStyle='#2fb0cb';ctx.lineWidth=7;ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(SH.x,SH.y);ctx.lineTo(el.x,el.y);ctx.lineTo(HAND.x,HAND.y);ctx.stroke();
+  ctx.fillStyle='#ffd8b0';ctx.beginPath();ctx.arc(bx+24,gy-166,10.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=C.amber;ctx.beginPath();ctx.ellipse(bx+22,gy-170,13,9,-.25,Math.PI,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+const bike={
+  num:'03',title:'Bicicleta',
+  desc:'Al pedalear, la energía química del ciclista se transforma en energía cinética; al frenar, la energía cinética se transforma en calor.',
+  controls(c){
+    const acc=c.mode==='accel';
+    return seg('mode',[['accel','🚴 Acelerar'],['brake','🛑 Frenar']],c.mode,'Tipo de movimiento')
+      +slider('mass','Masa total (ciclista + bicicleta)',40,150,5,c.mass,'kg',0)
+      +slider('speed',acc?'Velocidad final alcanzada':'Velocidad al empezar a frenar',5,60,1,c.speed,'km/h',0)
+      +(acc?slider('push','Fuerza neta del pedaleo',50,400,10,c.push,'N',0):slider('brake','Fuerza de frenado',100,800,10,c.brake,'N',0))
+      +'<p class="subtle">El cálculo usa m/s (km/h ÷ 3,6). Se desprecian el aire y la rodadura.</p>';
+  },
+  build(c){
+    const m=c.mass,v0=c.speed/3.6,acc=c.mode==='accel',F=acc?c.push:c.brake,a=F/m,t1=v0/a,d1=v0*v0/(2*a),Ec0=.5*m*v0*v0,eta=.25;
+    const ref=acc?Ec0/eta:Ec0,d=eDec(ref),dur=t1+(acc?1.5:1);
+    const P=100,BX=260,GYb=398,FW=BX+52;
+    const at=t=>{const u=Math.min(t,t1);if(acc){const v=a*u;return{v,x:.5*a*u*u+(t>t1?v0*(t-t1):0)}}return{v:Math.max(0,v0-a*u),x:v0*u-.5*a*u*u}};
+    const heatOf=v=>(!acc&&v>.05)?clamp(.3+F*v/4000,0,1):0;
+    const ridge=(off,col,base,A)=>{ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(0,372);for(let x=0;x<=W;x+=8){const u=x+off;ctx.lineTo(x,base-A[0]*Math.sin(u*.0061+1)-A[1]*Math.sin(u*.017+2.1)-A[2]*Math.sin(u*.043))}ctx.lineTo(W,372);ctx.closePath();ctx.fill()};
+    const caliper=wx=>({x:wx+Math.cos(-Math.PI/2-.35)*27,y:GYb-34+Math.sin(-Math.PI/2-.35)*27});
+    let sweatAcc=0;
+    return{
+      dur,at,
+      energy:st=>{
+        const Ec=.5*m*st.v*st.v;
+        if(acc){const chem=Ec/eta;return{ref,total:chem,items:[
+          {label:'Química usada (músculos)',short:'Eq',val:chem,color:C.violet,stack:0},
+          {label:'Cinética',short:'Ec',val:Ec,color:C.cyan,stack:1},
+          {label:'Calor corporal (≈ 75 %)',short:'Q',val:chem-Ec,color:C.red,stack:1}]}}
+        return{ref,total:Ec0,items:[
+          {label:'Cinética',short:'Ec',val:Ec,color:C.cyan,stack:1},
+          {label:'Calor en los frenos',short:'Q',val:Ec0-Ec,color:C.red,stack:1}]};
+      },
+      totalLine:acc?null:'Energía total',eqNote:acc?'energía química usada':'Ec inicial (se conserva)',
+      metrics:(st,t)=>[['Tiempo',fmt(t,2)+' s'],['Velocidad',fmt(st.v*3.6,1)+' km/h'],['Rapidez',fmt(st.v,2)+' m/s'],['Distancia',fmt(st.x,1)+' m']],
+      formula:acc?'Ec = ½·m·v²    v(m/s) = v(km/h) ÷ 3,6\nW = F·d = Ec    a = F ÷ m':'Ec = ½·m·v²    v(m/s) = v(km/h) ÷ 3,6\nDistancia de frenado: d = Ec ÷ F',
+      results:acc?[
+        `v = ${fmt(c.speed)} km/h ÷ 3,6 = <b>${fmt(v0,2)} m/s</b>`,
+        `Ec = ½·m·v² = ½ · ${fmt(m)} · ${fmt(v0,2)}² = <b>${fmt(Ec0,d)} J</b>`,
+        `a = F ÷ m = ${fmt(F)} ÷ ${fmt(m)} = ${fmt(a,2)} m/s² → t = <b>${fmt(t1,2)} s</b>`,
+        `Distancia: d = <b>${fmt(d1,1)} m</b> · Trabajo W = F·d = ${fmt(F*d1,d)} J = Ec ✓`,
+        `Energía química estimada (rendimiento ≈ 25 %): <b>${fmt(Ec0/eta,d)} J</b>`
+      ]:[
+        `v = ${fmt(c.speed)} km/h ÷ 3,6 = <b>${fmt(v0,2)} m/s</b>`,
+        `Ec inicial = ½ · ${fmt(m)} · ${fmt(v0,2)}² = <b>${fmt(Ec0,d)} J</b>`,
+        `Distancia de frenado: d = Ec ÷ F = ${fmt(Ec0,d)} ÷ ${fmt(F)} = <b>${fmt(d1,2)} m</b>`,
+        `Tiempo de frenado: t = v ÷ a = <b>${fmt(t1,2)} s</b> (a = F ÷ m = ${fmt(a,2)} m/s²)`,
+        `Calor generado en los frenos: <b>${fmt(Ec0,d)} J</b>`
+      ],
+      note:acc
+        ?'Al pedalear, los músculos transforman <b>energía química</b> (de los alimentos) en trabajo: W = F·d = Ec. El cuerpo aprovecha solo un ~25 %; el resto se libera como <b>calor</b> (por eso sudamos). Al llegar a la velocidad final deja de pedalear y, sin rozamiento, mantiene la velocidad (1.ª ley de Newton).'
+        :'Al frenar, el roce de las zapatas con la llanta transforma la <b>energía cinética en calor</b> (por eso se calientan). Se cumple Ec + Q = Ec inicial. Como Ec = ½·m·v², <b>al doble de velocidad la distancia de frenado se multiplica por 4</b>; también crece con la masa.',
+      events:[{t:t1,fn:()=>{
+        if(acc)addP({kind:'text',text:'¡'+fmt(c.speed)+' km/h!',x:BX,y:150,vy:-20,life:2,color:C.cyan,size:17});
+        else{addP({kind:'text',text:'¡Detenida!  d = '+fmt(d1,1)+' m',x:BX+20,y:150,vy:-20,life:2.2,color:C.amber,size:16});for(let i=0;i<12;i++)addP({x:FW+rnd(-20,20),y:GYb-2,vx:rnd(-60,60),vy:-rnd(20,70),g:200,life:rnd(.5,.9),r:rnd(1.5,3),color:'#9fb2c4',shrink:1})}
+      }}],
+      tick(st,dt){
+        const h=heatOf(st.v);
+        if(h>0){spawnAcc+=h*42*dt;while(spawnAcc>=1){spawnAcc--;const p=caliper(Math.random()<.5?BX-52:BX+52);addP({x:p.x+rnd(-3,3),y:p.y,vx:-st.v*P*.35+rnd(-15,15),vy:rnd(-60,-25),g:-12,life:rnd(.5,.9),r:rnd(1.4,3),color:Math.random()<.5?'#ffb15c':'#ff6f4f',shrink:1,glow:1})}}
+        if(acc&&st.v<v0-1e-6){sweatAcc+=dt*2.2;while(sweatAcc>=1){sweatAcc--;addP({x:BX+16,y:GYb-170,vx:-40-st.v*12,vy:-30,g:380,life:.7,r:2.2,color:'#8fd8ff'})}}
+      },
+      hud:()=>hud(18,26),
+      draw(st,t){
+        const xb=st.x,sx=xm=>FW+(xm-xb)*P;
+        // cielo con resplandor de atardecer
+        const g=ctx.createLinearGradient(0,0,0,372);g.addColorStop(0,'#0a1729');g.addColorStop(1,'#1d3e59');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+        const sg=ctx.createRadialGradient(580,300,10,580,300,260);sg.addColorStop(0,'rgba(255,191,98,.2)');sg.addColorStop(1,'rgba(255,191,98,0)');ctx.fillStyle=sg;ctx.fillRect(0,0,W,372);
+        // capas con paralaje (las lejanas se mueven más lento)
+        ridge(xb*P*.05,'#11273b',300,[38,22,10]);
+        ridge(xb*P*.18,'#15314a',336,[22,12,6]);
+        const tsh=xb*P*.45;
+        for(let kk=Math.floor(tsh/150)-1;kk<=Math.floor(tsh/150)+7;kk++){const j=((kk*53)%70+70)%70,x=kk*150-tsh+j,s=.75+(((kk*31)%5+5)%5)*.1;
+          ctx.fillStyle='#0f2430';ctx.fillRect(x-3*s,372-34*s,6*s,34*s);ctx.fillStyle='#163a3f';ctx.beginPath();ctx.ellipse(x,372-50*s,20*s,28*s,0,0,Math.PI*2);ctx.fill()}
+        // farolas (se mueven con la carretera)
+        for(let kk=Math.floor((xb-4)/8);kk<=Math.ceil((xb+6)/8);kk++){const x=sx(kk*8+4);if(x<-30||x>W+30)continue;
+          line(x,372,x,262,'#2c4558',4);line(x,264,x+18,264,'#2c4558',3);
+          const lg=ctx.createRadialGradient(x+18,268,0,x+18,268,40);lg.addColorStop(0,'rgba(255,214,140,.55)');lg.addColorStop(1,'rgba(255,214,140,0)');ctx.fillStyle=lg;ctx.beginPath();ctx.arc(x+18,268,40,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#ffe2a8';ctx.beginPath();ctx.arc(x+18,268,3.5,0,Math.PI*2);ctx.fill()}
+        // carretera y líneas del carril
+        ctx.fillStyle='#18242f';ctx.fillRect(0,372,W,78);
+        line(0,372.5,W,372.5,'#3d5a6d',2);line(0,449,W,449,'#2b4152',2);
+        ctx.fillStyle='rgba(234,243,255,.32)';
+        for(let kk=Math.floor((xb-4)/3);kk<=Math.ceil((xb+6)/3);kk++)ctx.fillRect(sx(kk*3),428,P*1.5,4);
+        // cinta métrica: distancia recorrida desde la salida
+        ctx.fillStyle='#0d1824';ctx.fillRect(0,450,W,35);
+        for(let kk=Math.max(0,Math.floor(xb-4));kk<=xb+6;kk++){const x=sx(kk),big=kk%5===0;line(x,450,x,450+(big?13:7),big?'#9db0c9':'#4e6478',big?2:1);
+          txt(kk===0?(acc?'0 m · salida':'0 m · empieza a frenar'):kk+' m',x+4,472,{size:11,w:big?800:600,color:kk===0?C.green:big?'#c4d6e7':'#7f93ad'})}
+        {const x=sx(0);if(x>-20&&x<W+20){ctx.fillStyle='rgba(101,226,160,.18)';ctx.fillRect(x-3,372,6,77)}}
+        // bandera: punto donde alcanza la velocidad final o se detiene
+        {const x=sx(d1);if(x>-40&&x<W+40){line(x,372,x,302,'#c4d6e7',2.5);ctx.fillStyle=acc?C.cyan:C.amber;ctx.beginPath();ctx.moveTo(x,302);ctx.lineTo(x+30,310);ctx.lineTo(x,318);ctx.closePath();ctx.fill();
+          dashed(x,372,x,449,acc?'rgba(77,217,244,.6)':'rgba(255,191,98,.7)',2,[5,5]);
+          txt(fmt(d1,1)+' m',x+4,459,{size:11,w:800,color:acc?C.cyan:C.amber,bg:'rgba(6,14,26,.85)'})}}
+        // ráfagas de viento proporcionales a la rapidez
+        if(st.v>.8){ctx.save();ctx.lineCap='round';ctx.strokeStyle='#d8f3ff';ctx.lineWidth=1.4;
+          for(let i=0;i<10;i++){const y=130+((i*53)%220),span=W+220,x=(((i*197-xb*P*1.7)%span)+span)%span-110,len=Math.min(140,st.v*9);ctx.globalAlpha=clamp(st.v/16,0,.35)*(.5+.25*(i%3));ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y);ctx.stroke()}
+          ctx.restore()}
+        // bicicleta con ruedas que giran según la distancia recorrida
+        const wa=xb/.34,crank=acc?Math.min(xb,d1)/.34/2.6-.6:-.25,blur=Math.min(1.2,st.v/.34*rate/60);
+        drawBike(BX,GYb,wa,crank,heatOf(st.v),blur);
+        // vector velocidad
+        if(st.v>.1){const len=Math.min(150,st.v*8);arrow(BX-40,196,BX-40+len,196,C.cyan,3);txt('v = '+fmt(st.v*3.6,1)+' km/h',BX-40,178,{size:13,w:800,color:C.cyan})}
+        // estado
+        const lab=acc?(t<t1?['ACELERANDO',C.cyan]:['VELOCIDAD CONSTANTE',C.green]):(st.v>.01?['FRENANDO',C.red]:['DETENIDA',C.amber]);
+        txt(lab[0],W/2-40,26,{size:13,w:800,align:'center',color:lab[1],bg:'rgba(6,14,26,.78)',border:lab[1]});
+      }
+    };
+  }
+};
+
+/* =====================================================================
+   Estado general, interfaz y bucle de animación
+   ===================================================================== */
+const TABS={coaster,ball,bike};
+const REPORT={coaster:{mass:200,h:20,friction:false},ball:{mass:2,h:5,e:.8,air:false},bike:{mass:80,speed:36,mode:'accel',push:200,brake:300}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let cfg=clone(REPORT);cfg.ball.air=true;
+let tab='coaster',M=null,playing=false,last=0;
+const cache={};
+function setText(id,s){if(cache[id]!==s){cache[id]=s;$(id).textContent=s}}
+function setHTML(id,s){if(cache[id]!==s){cache[id]=s;$(id).innerHTML=s}}
+
+function rebuild(){
+  M=TABS[tab].build(cfg[tab]);
+  // series para la gráfica
+  const n=360,tt=[],EE=[];
+  for(let i=0;i<n;i++){const t=M.dur*i/(n-1);tt.push(t);EE.push(M.energy(M.at(t)))}
+  const E0=EE[0],ser=[];
+  E0.items.forEach((it,k)=>{const vals=EE.map(e=>e.items[k].val);if(Math.max(...vals)>E0.ref*1e-4)ser.push({k,label:it.label,color:it.color,vals})});
+  if(M.totalLine)ser.push({k:'total',label:M.totalLine,color:'#eaf3ff',dash:[6,5],vals:EE.map(e=>e.total)});
+  M.chart={tt,ser,max:Math.max(...ser.map(s=>Math.max(...s.vals)),1e-9)};
+  $('legend').innerHTML=ser.map(s=>`<span><i style="background:${s.dash?`repeating-linear-gradient(90deg,${s.color} 0 4px,transparent 4px 7px)`:s.color}"></i>${s.label}</span>`).join('');
+  $('bars').innerHTML=E0.items.map((it,i)=>`<div class="barlabel"><span><i class="dot" style="background:${it.color}"></i>${it.label}</span><b id="bv${i}"></b></div><div class="bar"><div class="fill" id="bf${i}" style="background:${it.color};box-shadow:0 0 12px ${it.color}66"></div></div>`).join('');
+  $('stack').innerHTML=E0.items.map((it,i)=>it.stack?`<i id="sg${i}" style="background:${it.color}"></i>`:'').join('');
+  $('formula').textContent=M.formula;
+  $('result').innerHTML=M.results.map(r=>`<li>${r}</li>`).join('');
+  $('explain').innerHTML=M.note;
+  $('pill').hidden=JSON.stringify(cfg[tab])!==JSON.stringify(REPORT[tab]);
+  for(const k in cache)delete cache[k];
+  simT=0;playing=false;parts=[];spawnAcc=0;
+  updateButtons();needsDraw=true;
+}
+function renderControls(){
+  const c=cfg[tab],box=$('controls');
+  box.innerHTML=TABS[tab].controls(c);
+  box.querySelectorAll('input[data-key]').forEach(inp=>{
+    const k=inp.dataset.key;
+    inp.addEventListener(inp.type==='checkbox'?'change':'input',()=>{
+      c[k]=inp.type==='checkbox'?inp.checked:Number(inp.value);
+      const o=$('o_'+k);if(o)o.textContent=fmt(c[k],+inp.dataset.dec)+(inp.dataset.unit?' '+inp.dataset.unit:'');
+      rebuild();
+    });
+  });
+  box.querySelectorAll('[data-seg]').forEach(b=>b.addEventListener('click',()=>{
+    c[b.dataset.seg]=b.dataset.val;renderControls();rebuild();
+    const nb=box.querySelector(`[data-seg="${b.dataset.seg}"][data-val="${b.dataset.val}"]`);if(nb)nb.focus();
+  }));
+}
+function setTab(t){
+  tab=t;
+  document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('active',on);b.setAttribute('aria-selected',String(on))});
+  const T=TABS[t];
+  $('chapter').textContent='Simulación '+T.num+' / 03';$('title').textContent=T.title;$('desc').textContent=T.desc;
+  canvas.setAttribute('aria-label','Animación: '+T.title);
+  renderControls();rebuild();
+}
+function updateButtons(){
+  $('play').textContent=playing?'⏸ Pausar':simT>=M.dur?'↻ Repetir':simT>0?'▶ Continuar':'▶ Iniciar';
+}
+function updatePanel(st,E){
+  M.metrics(st,simT).forEach(([l,v],i)=>{setText('l'+(i+1),l);setText('m'+(i+1),v)});
+  const d=eDec(E.ref),idx=E.items.map((it,i)=>it.stack?i:-1).filter(i=>i>=0);
+  const rounded=roundParts(idx.map(i=>E.items[i].val),E.total,d);
+  E.items.forEach((it,i)=>{const j=idx.indexOf(i);setText('bv'+i,fmt(j>=0?rounded[j]:it.val,d)+' J');$('bf'+i).style.width=(E.ref>0?clamp(it.val/E.ref*100,0,100):0)+'%'});
+  idx.forEach(i=>{$('sg'+i).style.width=(E.ref>0?clamp(E.items[i].val/E.ref*100,0,100):0)+'%'});
+  setHTML('baleq',`${idx.map(i=>E.items[i].short).join(' + ')} = ${rounded.map(v=>fmt(v,d)).join(' + ')} = <b>${fmt(E.total,d)} J</b> <em>✓ ${M.eqNote}</em>`);
+}
+function drawChart(E){
+  const c=cctx,L=66,Rr=16,T=14,B=30,w=CW,h=CH,ch=M.chart,dur=M.dur;
+  c.clearRect(0,0,w,h);
+  const yt=niceNum(ch.max/4),nt=Math.max(1,Math.ceil(ch.max*1.04/yt)),ymax=yt*nt,X=t=>L+(w-L-Rr)*t/dur,Y=v=>h-B-(h-B-T)*v/ymax;
+  const dy=yt%1===0?0:(yt*10)%1===0?1:2;
+  c.font=`600 ${11*TSC}px ${FONT}`;c.textBaseline='middle';
+  for(let i=0;i<=nt;i++){const v=yt*i,y=Math.round(Y(v))+.5;c.strokeStyle='rgba(157,176,201,.13)';c.lineWidth=1;c.beginPath();c.moveTo(L,y);c.lineTo(w-Rr,y);c.stroke();c.fillStyle='#7f93ad';c.textAlign='right';c.fillText(fmt(v,dy)+(i===nt?' J':''),L-8,y)}
+  const step=niceNum(dur/7);c.textAlign='center';
+  for(let i=0;i*step<=dur+1e-6;i++){const t=i*step;c.fillText(fmt(t,step<1?1:0),X(t),h-B+14)}
+  c.textAlign='right';c.fillText('t (s)',w-Rr,h-6);
+  const n=ch.tt.length,path=s=>{c.beginPath();for(let i=0;i<n;i++){const x=X(ch.tt[i]),y=Y(s.vals[i]);i?c.lineTo(x,y):c.moveTo(x,y)}};
+  c.lineJoin='round';c.lineCap='round';
+  for(const s of ch.ser){path(s);c.setLineDash(s.dash||[]);c.globalAlpha=.2;c.strokeStyle=s.color;c.lineWidth=2;c.stroke()}
+  c.globalAlpha=1;
+  const xc=X(simT);
+  c.save();c.beginPath();c.rect(0,0,xc+1,h);c.clip();
+  for(const s of ch.ser){path(s);c.setLineDash(s.dash||[]);c.strokeStyle=s.color;c.lineWidth=2.6;c.shadowColor=s.color;c.shadowBlur=s.dash?0:6;c.stroke()}
+  c.restore();c.setLineDash([]);
+  c.strokeStyle='rgba(234,243,255,.45)';c.lineWidth=1;c.beginPath();c.moveTo(xc+.5,T);c.lineTo(xc+.5,h-B);c.stroke();
+  for(const s of ch.ser){const v=s.k==='total'?E.total:E.items[s.k].val;c.fillStyle=s.color;c.beginPath();c.arc(xc,Y(v),4,0,Math.PI*2);c.fill()}
+}
+function render(){
+  const st=M.at(simT),E=M.energy(st);
+  ctx.save();M.draw(st,simT);drawP();ctx.restore();
+  overlay(E);M.hud();
+  drawChart(E);updatePanel(st,E);
+  $('scrub').value=String(Math.round(simT/M.dur*1000));
+  setText('tl',fmt(simT,2)+' s / '+fmt(M.dur,2)+' s');
+}
+function loop(ts){
+  const real=last?Math.min((ts-last)/1000,.05):0;last=ts;
+  if(playing){
+    const prev=simT;simT=Math.min(M.dur,simT+real*rate);const dts=simT-prev;
+    for(const ev of M.events)if(ev.t>prev&&ev.t<=simT)ev.fn();
+    if(M.tick&&dts>0)M.tick(M.at(simT),dts);
+    stepP(dts);needsDraw=true;
+    if(simT>=M.dur){playing=false;updateButtons()}
+  }else if(parts.length&&simT>=M.dur){stepP(real*rate);needsDraw=true}
+  if(needsDraw){needsDraw=false;render()}
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Eventos ---------- */
+$('play').addEventListener('click',()=>{
+  if(playing)playing=false;
+  else{if(simT>=M.dur){simT=0;parts=[]}playing=true}
+  updateButtons();needsDraw=true;
+});
+$('reset').addEventListener('click',()=>{playing=false;simT=0;parts=[];updateButtons();needsDraw=true});
+$('example').addEventListener('click',()=>{
+  cfg=clone(REPORT);setTab(tab);
+  const b=$('example');b.textContent='✓ Datos del informe cargados';clearTimeout(b._t);b._t=setTimeout(()=>{b.textContent='Usar datos del informe'},1600);
+});
+$('scrub').addEventListener('input',e=>{const v=Number(e.target.value);playing=false;simT=v>=1000?M.dur:M.dur*v/1000;parts=[];updateButtons();needsDraw=true});
+document.querySelectorAll('#rate button').forEach(b=>b.addEventListener('click',()=>{
+  rate=Number(b.dataset.rate);
+  document.querySelectorAll('#rate button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  needsDraw=true;
+}));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&(e.target===document.body||e.target===canvas)){e.preventDefault();$('play').click()}});
+let rz=0;window.addEventListener('resize',()=>{cancelAnimationFrame(rz);rz=requestAnimationFrame(setupCanvas)});
+
+setupCanvas();
+setTab('coaster');
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
